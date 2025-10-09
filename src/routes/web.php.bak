@@ -1,0 +1,50 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ExpedienteController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\RepresentanteController;
+
+Route::get('/', fn () => view('welcome'));
+
+Route::middleware(['auth:web'])->group(function () {
+
+    // Redirección por rol (Spatie)
+    Route::get('/dashboard', function (Request $request) {
+        $user = $request->user();
+        return $user->hasRole('Admin')
+            ? to_route('admin.dashboard')
+            : to_route('representante.dashboard');
+    })->name('dashboard');
+
+    // Área común (permitir Admin O Representante)
+    Route::middleware(['role:Admin|Representante,web'])->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Si ambos deben usar expedientes, déjalo aquí.
+        Route::resource('expedientes', ExpedienteController::class)->except(['show']);
+    });
+
+    // Solo Admin
+    Route::middleware(['role:Admin,web'])->group(function () {
+        Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/comparsas/asignar', [\App\Http\Controllers\AdminComparsaController::class, 'assignForm'])
+            ->name('admin.comparsas.assign');
+        Route::post('/admin/comparsas/asignar', [\App\Http\Controllers\AdminComparsaController::class, 'assignStore'])
+            ->name('admin.comparsas.assign.store');
+    });
+
+    // Solo Representante
+    Route::middleware(['role:Representante,web'])->group(function () {
+        Route::get('/representante', [RepresentanteController::class, 'index'])->name('representante.dashboard');
+    });
+});
+
+// Test rápido:
+Route::get('/ping-rep', fn () => 'ok-rep')->middleware(['auth:web','role:Representante,web']);
+
+require __DIR__.'/auth.php';

@@ -1,0 +1,32 @@
+{
+  "name": "miapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "alpinejs": "^3.15.0",
+    "autoprefixer": "^10.0.0",
+    "axios": "^1.12.2",
+    "postcss": "^8.0.0",
+    "tailwindcss": "^3.0.0",
+    "vite": "^4.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10",
+    "autoprefixer": "^10.x",
+    "laravel-vite-plugin": "^0.x",
+    "postcss": "^8.x",
+    "tailwindcss": "^3.x",
+    "vite": "^4.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}

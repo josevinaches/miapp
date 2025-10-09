@@ -1,0 +1,23 @@
+FROM php:8.3-fpm-alpine
+
+# Extensiones comunes (ajusta a tu proyecto)
+RUN docker-php-ext-install pdo pdo_mysql opcache
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Config PHP
+COPY php.ini /usr/local/etc/php/conf.d/custom.ini
+
+# Alinea UID/GID con tu usuario de WSL para evitar permisos raros
+ARG UID=1000
+ARG GID=1000
+
+# -S crea usuarios/grupos "sistema" en Alpine (sin home "pesado")
+# Si ya existen UID/GID, no rompas el build.
+RUN set -eux; \
+    addgroup -g "${GID}" -S app 2>/dev/null || true; \
+    adduser  -u "${UID}" -G app -S -D app 2>/dev/null || true
+
+USER app
+WORKDIR /var/www/html
