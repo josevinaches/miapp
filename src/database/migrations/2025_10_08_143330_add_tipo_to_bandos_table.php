@@ -4,22 +4,25 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
-        Schema::table('bandos', function (Blueprint $table) {
-            $table->string('tipo'); // Agregar el campo 'tipo'
-        });
+        // Solo añadir si NO existe
+        if (! Schema::hasColumn('bandos', 'tipo')) {
+            Schema::table('bandos', function (Blueprint $table) {
+                $table->string('tipo');
+            });
+        }
+        // Si ya existía, no hacemos nada (no-op)
     }
 
     public function down(): void
     {
-        Schema::table('bandos', function (Blueprint $table) {
-            $table->dropColumn('tipo');
-        });
+        // Solo borrar si SÍ existe
+        if (Schema::hasColumn('bandos', 'tipo')) {
+            Schema::table('bandos', function (Blueprint $table) {
+                $table->dropColumn('tipo');
+            });
+        }
     }
 };

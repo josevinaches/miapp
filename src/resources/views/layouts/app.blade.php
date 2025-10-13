@@ -41,8 +41,12 @@
                     ⚠️ {{ session('error') }}
                 </div>
             @endif
-
-            {{ $slot }}
+            {{-- Contenido principal: compatible con @section y con $slot --}}
+            @hasSection('content')
+                @yield('content')
+            @else
+                {{ $slot ?? '' }}
+            @endif
         </main>
     </div>
 </body>

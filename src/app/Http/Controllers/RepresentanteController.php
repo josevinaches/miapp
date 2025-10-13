@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 
 class RepresentanteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('representante.dashboard');  // Redirige a una vista de representante
+        $user = $request->user()->load(['comparsa.bando:id,tipo,nombre']);
+        return view('representante.dashboard', [
+            'user'     => $user,
+            'comparsa' => $user->comparsa,     // puede ser null
+        ]);
     }
 }

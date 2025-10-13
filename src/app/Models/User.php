@@ -51,4 +51,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(\App\Models\Comparsa::class, 'user_id');
     }
+
+    
 }

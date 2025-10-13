@@ -1,13 +1,26 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+    @php
+        // Detección robusta de Admin: Spatie (hasRole) o campo role
+        $user = auth()->user();
+        $isAdmin = false;
+        if ($user) {
+            $isAdmin =
+                (method_exists($user, 'hasRole') && $user->hasRole('Admin')) ||
+                (isset($user->role) && strtolower($user->role) === 'admin');
+        }
+    @endphp
+
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    <a href="{{ route('dashboard') }}"
+                        class="@if (request()->routeIs('admin.*', 'representante.*')) text-indigo-600 font-semibold @endif">
+                        🏠 Panel
                     </a>
+
                 </div>
 
                 <!-- Navigation Links -->
@@ -16,17 +29,24 @@
                         📄 {{ __('Expedientes') }}
                     </x-nav-link>
 
-                    @if (auth()->user()?->role === 'admin')
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                    @if ($isAdmin)
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             👑 {{ __('Admin') }}
+                        </x-nav-link>
+
+                        {{-- NUEVO: acceso directo a Asignar comparsa ↔ representante --}}
+                        <x-nav-link :href="route('admin.comparsas.assign')" :active="request()->routeIs('admin.comparsas.assign')">
+                            🔗 {{ __('Asignar comparsas') }}
                         </x-nav-link>
                     @else
                         <x-nav-link :href="route('representante.dashboard')" :active="request()->routeIs('representante.*')">
                             🧑‍💼 {{ __('Representante') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('representante.festeros.index')" :active="request()->routeIs('representante.festeros.*')">
+                            👥 {{ __('Festeros') }}
+                        </x-nav-link>
                     @endif
                 </div>
-
             </div>
 
             <!-- Settings Dropdown -->
@@ -36,7 +56,6 @@
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()?->name ?? 'Invitado' }}</div>
-
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20">
@@ -56,10 +75,8 @@
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
                             <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                                onclick="event.preventDefault(); this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
@@ -90,17 +107,26 @@
                 📄 {{ __('Expedientes') }}
             </x-responsive-nav-link>
 
-            @if (auth()->user()?->role === 'admin')
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+            @if ($isAdmin)
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     👑 {{ __('Admin') }}
                 </x-responsive-nav-link>
+                {{-- NUEVO en responsive --}}
+                <x-responsive-nav-link :href="route('admin.comparsas.assign')" :active="request()->routeIs('admin.comparsas.assign')">
+                    🔗 {{ __('Asignar comparsas') }}
+                </x-responsive-nav-link>
             @else
-                <x-responsive-nav-link :href="route('representante.dashboard')" :active="request()->routeIs('representante.*')">
+                <x-responsive-nav-link :href="route('representante.dashboard')" :active="request()->routeIs('representante.dashboard')">
                     🧑‍💼 {{ __('Representante') }}
                 </x-responsive-nav-link>
-            @endif
-        </div>
 
+                {{-- Festeros (responsive) --}}
+                <x-responsive-nav-link :href="route('representante.festeros.index')" :active="request()->routeIs('representante.festeros.*')">
+                    👥 {{ __('Festeros') }}
+                </x-responsive-nav-link>
+            @endif
+
+        </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
@@ -117,12 +143,14 @@
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                        onclick="event.preventDefault(); this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('representante.festeros.index')" :active="request()->routeIs('representante.festeros.*')">
+                        👥 {{ __('Festeros') }}
+                    </x-responsive-nav-link>
+
                 </form>
             </div>
         </div>
