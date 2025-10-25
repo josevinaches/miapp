@@ -56,6 +56,31 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
+## Git workflow tips
+
+If you are versioning this project with Git, make sure that you always run your
+Git commands from the root of the repository (`/workspace/miapp` in este
+entorno) y no desde subdirectorios como `src/`. Esto evita errores como
+`src refspec <branch> does not match any` al intentar hacer `git push`. Si
+quieres trabajar en una rama distinta a `main`, crea la rama desde la raíz:
+
+```bash
+git checkout -b work
+```
+
+Una vez tengas cambios, añade y confirma desde el mismo directorio raíz:
+
+```bash
+git add .
+git commit -m "Describe aquí tus cambios"
+```
+
+Finalmente sube la rama al remoto:
+
+```bash
+git push -u origin work
+```
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
